@@ -89,9 +89,9 @@ def configure
 
     recipe_eval do
       server_name = current['name'] || current['port']
-      piddir = "#{base_piddir}/#{server_name}"
-      aof_file = "#{current['datadir']}/appendonly-#{server_name}.aof"
-      rdb_file = "#{current['datadir']}/dump-#{server_name}.rdb"
+      piddir = "#{base_piddir}/redis#{server_name}"
+      aof_file = "#{current['datadir']}/appendonly-redis#{server_name}.aof"
+      rdb_file = "#{current['datadir']}/dump-redis#{server_name}.rdb"
 
       #Create the owner of the redis data directory
       user current['user'] do
@@ -167,7 +167,7 @@ def configure
         end
       end
       #Lay down the configuration files for the current instance
-      template "#{current['configdir']}/#{server_name}.conf" do
+      template "#{current['configdir']}/redis#{server_name}.conf" do
         source 'redis.conf.erb'
         cookbook 'redisio'
         owner current['user']
@@ -176,7 +176,7 @@ def configure
         variables({
           :version                => version_hash,
           :piddir                 => piddir,
-          :name                   => server_name,
+          :name                   => 'redis'<<server_name,
           :job_control            => current['job_control'],
           :port                   => current['port'],
           :address                => current['address'],
@@ -221,7 +221,7 @@ def configure
         group 'root'
         mode '0755'
         variables({
-          :name => server_name,
+          :name => 'redis'<<server_name,
           :bin_path => bin_path,
           :job_control => current['job_control'],
           :port => current['port'],
@@ -244,7 +244,7 @@ def configure
         group current['group']
         mode '0644'
         variables({
-          :name => server_name,
+          :name => 'redis'<<server_name,
           :job_control => current['job_control'],
           :port => current['port'],
           :address => current['address'],
